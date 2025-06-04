@@ -1,5 +1,4 @@
 #include <stddef.h>
-#include <stdint.h>
 
 #include "vga.h"
 
@@ -9,16 +8,22 @@ const int VGA_ROWS = 25;
 
 static int term_col = 0;
 static int term_row = 0;
-static uint8_t term_color = 0x0F;
+static uint8_t term_colour = 0x0f;
 
 void vga_init(void) {
   for (int row = 0; row < VGA_ROWS; ++row) {
     for (int col = 0; col < VGA_COLS; ++col) {
       const size_t index = (row * VGA_COLS) + col;
-      vga_buffer[index] = ((uint8_t)term_color << 8) | ' ';
+      vga_buffer[index] = ((uint8_t)term_colour << 8) | ' ';
     }
   }
 }
+
+void vga_setcol(uint8_t col) { term_colour = col; }
+
+void vga_setfg(uint8_t fg) { term_colour = fg & 0xf; }
+
+void vga_setbg(uint8_t bg) { term_colour = (bg & 0xf) << 4; }
 
 void vga_putc(char c) {
   switch (c) {
@@ -28,7 +33,7 @@ void vga_putc(char c) {
   }; break;
   default: {
     const size_t index = (term_row * VGA_COLS) + term_col;
-    vga_buffer[index] = ((uint16_t)term_color << 8) | c;
+    vga_buffer[index] = ((uint16_t)term_colour++ << 8) | c;
     term_col++;
   }; break;
   }

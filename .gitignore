@@ -1,5 +1,6 @@
 # Build
 build/
+.cache/
 
 # Toolchain (cross compiler)
 toolchain/*
@@ -7,3 +8,4 @@ toolchain/*
 
 # Clangd config
 .clangd
+compile_commands.json
