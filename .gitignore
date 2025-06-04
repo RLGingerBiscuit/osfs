@@ -1,0 +1,9 @@
+# Build
+build/
+
+# Toolchain (cross compiler)
+toolchain/*
+!toolchain/*.sh
+
+# Clangd config
+.clangd
