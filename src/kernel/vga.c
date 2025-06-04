@@ -1,6 +1,6 @@
 #include <stddef.h>
 
-#include "vga.h"
+#include <kernel/vga.h>
 
 volatile uint16_t *vga_buffer = (uint16_t *)0xB8000;
 const int VGA_COLS = 80;
@@ -19,11 +19,11 @@ void vga_init(void) {
   }
 }
 
-void vga_setcol(uint8_t col) { term_colour = col; }
+void vga_setcol(enum vga_colour col) { term_colour = col; }
 
-void vga_setfg(uint8_t fg) { term_colour = fg & 0xf; }
+void vga_setfg(enum vga_colour fg) { term_colour = fg & 0xf; }
 
-void vga_setbg(uint8_t bg) { term_colour = (bg & 0xf) << 4; }
+void vga_setbg(enum vga_colour bg) { term_colour = (bg & 0xf) << 4; }
 
 void vga_putc(char c) {
   switch (c) {
