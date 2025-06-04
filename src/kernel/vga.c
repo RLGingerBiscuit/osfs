@@ -1,5 +1,7 @@
 #include <stddef.h>
 
+#include <string.h>
+
 #include <kernel/vga.h>
 
 volatile uint16_t *vga_buffer = (uint16_t *)0xB8000;
@@ -11,11 +13,12 @@ static int term_row = 0;
 static uint8_t term_colour = 0x0f;
 
 void vga_init(void) {
-  for (int row = 0; row < VGA_ROWS; ++row) {
-    for (int col = 0; col < VGA_COLS; ++col) {
-      const size_t index = (row * VGA_COLS) + col;
-      vga_buffer[index] = ((uint8_t)term_colour << 8) | ' ';
-    }
+  for (int col = 0; col < VGA_COLS; ++col) {
+    vga_buffer[col] = ((uint16_t)term_colour << 8) | ' ';
+  }
+  for (int row = 1; row < VGA_ROWS; ++row) {
+    memcpy((uint16_t *)&vga_buffer[row * VGA_COLS], (uint16_t *)vga_buffer,
+           sizeof(uint16_t) * VGA_COLS);
   }
 }
 
@@ -27,20 +30,12 @@ inline void vga_setbg(enum vga_colour bg) { term_colour = (bg & 0xf) << 4; }
 
 static inline void vga_advance_line() {
   term_col = 0;
-  if (term_row >= VGA_ROWS-1) {
+  if (term_row >= VGA_ROWS - 1) {
     // scroll
-    for (int row = 1; row < VGA_ROWS; ++row) {
-      for (int col = 0; col < VGA_COLS; ++col) {
-        const size_t from_index = (row * VGA_COLS) + col;
-        const size_t to_index = ((row - 1) * VGA_COLS) + col;
-        vga_buffer[to_index] = vga_buffer[from_index];
-      }
-    }
-    for (int col = 0; col < VGA_COLS; ++col) {
-      const int row = VGA_ROWS - 1;
-      const size_t index = (row * VGA_COLS) + col;
-      vga_buffer[index] = ' ';
-    }
+    memcpy((uint16_t *)vga_buffer, (uint16_t *)&vga_buffer[VGA_COLS],
+           sizeof(uint16_t) * (VGA_COLS * (VGA_ROWS - 1)));
+    for (int col = 0; col < VGA_COLS; ++col)
+      vga_buffer[(VGA_ROWS - 1) * (VGA_COLS) + col] = ' ';
     term_row = VGA_ROWS - 1;
   } else {
     // just go down
