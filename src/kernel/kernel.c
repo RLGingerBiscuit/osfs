@@ -13,8 +13,18 @@ void kernel_main(void) {
   vga_init();
 
   // vga_print("Hello World!\nWe're kerneling this thang!\n");
-  for (int i = 0; i < 256; ++i) {
-    vga_setcol(i);
-    vga_putc('M');
+  // for (int i = 0; i < 256; ++i) {
+  //   vga_setcol(i);
+  //   vga_putc('M');
+  // }
+
+  for(int i = 33; i < 33+40;++i) {
+    for(int j = 0;j<80;++j){
+      vga_putc(i);
+    }
+    size_t x = 0;
+    while(x < 10000000) {
+      x++;
+    }
   }
 }
