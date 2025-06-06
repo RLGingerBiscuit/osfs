@@ -9,3 +9,9 @@ toolchain/*
 # Clangd config
 .clangd
 compile_commands.json
+
+# GDB config
+.gdbinit
+
+# Silly little misc. files
+*.ref

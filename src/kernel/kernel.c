@@ -1,6 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
+#include <stdio.h>
 
+#include <kernel/panic.h>
 #include <kernel/vga.h>
 
 #if defined(__linux__)
@@ -11,6 +13,8 @@
 
 void kernel_main(void) {
   vga_init();
+
+  printf("Hello: %% %u %d %i %o %x %X %p\n", 42, -42, 42, 42, 42, 42, 42);
 
   // vga_print("Hello World!\nWe're kerneling this thang!\n");
   // for (int i = 0; i < 256; ++i) {

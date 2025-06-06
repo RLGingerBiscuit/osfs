@@ -59,8 +59,12 @@ void vga_putc(char c) {
     vga_advance_line();
 }
 
-void vga_print(const char *str) {
-  for (const char *c = str; *str; c = ++str) {
-    vga_putc(*c);
-  }
+void vga_print(const char *str, size_t len) {
+  for (size_t i = 0; i < len; ++i)
+    vga_putc(str[i]);
+}
+
+void vga_printstr(const char *str) {
+  size_t len = strlen(str);
+  vga_print(str, len);
 }

@@ -1,6 +1,7 @@
 #ifndef OSFS_VGA_H
 #define OSFS_VGA_H
 
+#include <stddef.h>
 #include <stdint.h>
 
 enum vga_colour {
@@ -30,6 +31,7 @@ void vga_setbg(enum vga_colour bg);
 
 void vga_putc(char c);
 
-void vga_print(const char *str);
+void vga_print(const char *str, size_t len);
+void vga_printstr(const char *str);
 
 #endif // OSFS_VGA_H
