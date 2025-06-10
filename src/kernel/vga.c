@@ -1,16 +1,18 @@
-#include <stddef.h>
 
+#include <stddef.h>
+#include <stdint.h>
 #include <string.h>
 
-#include <kernel/vga.h>
+#include "vga.h"
+#include <kernel/tty.h>
 
-volatile uint16_t *vga_buffer = (uint16_t *)0xB8000;
 const int VGA_COLS = 80;
 const int VGA_ROWS = 25;
 
 static int term_col = 0;
 static int term_row = 0;
 static uint8_t term_colour = 0x0f;
+volatile uint16_t *vga_buffer = (uint16_t *)0xB8000;
 
 void vga_init(void) {
   for (int col = 0; col < VGA_COLS; ++col) {
@@ -65,9 +67,4 @@ void vga_putc(char c) {
 void vga_print(const char *str, size_t len) {
   for (size_t i = 0; i < len; ++i)
     vga_putc(str[i]);
-}
-
-void vga_printstr(const char *str) {
-  size_t len = strlen(str);
-  vga_print(str, len);
 }

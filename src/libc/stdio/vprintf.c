@@ -1,10 +1,8 @@
-
 #include <limits.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
-
-#include <kernel/kstdio.h>
-#include <kernel/panic.h>
-#include <kernel/vga.h>
 
 typedef enum arg_type {
   // Prefixes
@@ -162,13 +160,15 @@ static const char states[]['z' - 'A' + 1] = {
     },
 };
 
+static void print(const char *str, size_t len);
+
 static void get_arg(union arg *arg, enum arg_type type, va_list *ap);
 
 static char *fmt_dec(uintmax_t x, char *te);
 static char *fmt_hex(uintmax_t x, char *te, char lower);
 static char *fmt_oct(uintmax_t x, char *te);
 
-int vga_vprintf(const char *restrict fmt, va_list ap) {
+int vprintf(const char *restrict fmt, va_list ap) {
   char buf[sizeof(uintmax_t) * 3];
   char *ts, *te;
   char ch;
@@ -190,7 +190,7 @@ int vga_vprintf(const char *restrict fmt, va_list ap) {
     }
     if (fmt != ts) {
       len = (ts - fmt);
-      vga_print(fmt, len);
+      print(fmt, len);
       fmt = ts;
       continue;
     }
@@ -201,7 +201,7 @@ int vga_vprintf(const char *restrict fmt, va_list ap) {
     // write literal '%'s
     if (*fmt == '%') {
       fmt++;
-      vga_putc('%');
+      putchar('%');
       continue;
     }
 
@@ -268,16 +268,21 @@ int vga_vprintf(const char *restrict fmt, va_list ap) {
     if (len < te - ts)
       len = (te - ts);
 
-    vga_print(ts, len);
+    print(ts, len);
   }
 
-  (void)arg;
   (void)pre_type;
 
   return written;
 
 inval:
   return -1;
+}
+
+static void print(const char *str, size_t len) {
+  for (size_t i = 0; i < len; ++i) {
+    putchar(str[i]);
+  }
 }
 
 static void get_arg(union arg *arg, enum arg_type type, va_list *ap) {
@@ -346,7 +351,8 @@ static void get_arg(union arg *arg, enum arg_type type, va_list *ap) {
   case TPRE:
   case BIGLPRE:
   case NOARG:
-    panic("printf: Attempted to get argument of util type");
+    printf("[ /v]printf: Attempted to get argument of util type");
+    abort();
   }
 }
 

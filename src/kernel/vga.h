@@ -1,8 +1,8 @@
-#ifndef OSFS_VGA_H
-#define OSFS_VGA_H
+
+#ifndef KERNEL_VGA_H
+#define KERNEL_VGA_H
 
 #include <stddef.h>
-#include <stdint.h>
 
 enum vga_colour {
   VGA_BLACK = 0x0,
@@ -23,15 +23,12 @@ enum vga_colour {
   VGA_WHITE = 0xf,
 };
 
-void vga_init(void);
-
 void vga_setcol(enum vga_colour col);
 void vga_setfg(enum vga_colour fg);
 void vga_setbg(enum vga_colour bg);
 
+void vga_init(void);
 void vga_putc(char c);
-
 void vga_print(const char *str, size_t len);
-void vga_printstr(const char *str);
 
-#endif // OSFS_VGA_H
+#endif // KERNEL_VGA_H

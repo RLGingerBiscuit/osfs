@@ -9,7 +9,7 @@ LINKER_FILE=linker.ld
 
 CC=i686-elf-gcc
 COMMON_FLAGS=-ffreestanding -g
-CFLAGS=$(COMMON_FLAGS) -std=c99 -Wall -Werror -I$(SRC_DIR) -I$(SRC_DIR)/libc
+CFLAGS=$(COMMON_FLAGS) -std=c99 -Wall -Werror -I$(SRC_DIR)/kernel/include -I$(SRC_DIR)/libc/include -DOSFS_LIBK
 LDFLAGS=$(COMMON_FLAGS) -nostdlib
 
 # This mess takes a path & file exts and recursively matches them (e.g. src/a.c src/utils/b.c)
@@ -45,5 +45,6 @@ $(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.s
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
+.PHONY=clean
 clean:
 	rm -rf $(BUILD_DIR)

@@ -1,5 +1,5 @@
-#ifndef LIBC_LIMITS_H
-#define LIBC_LIMITS_H
+#ifndef _LIMITS_H
+#define _LIMITS_H
 
 #define CHAR_MIN 0
 #define CHAR_MAX 255
@@ -22,4 +22,4 @@
 #define LLONG_MAX 0x7fffffffffffffffLL
 #define ULLONG_MAX (2ULL * LLONG_MAX + 1)
 
-#endif // LIBC_LIMITS_H
+#endif // _LIMITS_H
