@@ -45,6 +45,9 @@ static inline void vga_advance_line() {
 
 void vga_putc(char c) {
   switch (c) {
+  case '\t': {
+    term_col += 4;
+  }; break;
   case '\n': {
     vga_advance_line();
   }; break;
