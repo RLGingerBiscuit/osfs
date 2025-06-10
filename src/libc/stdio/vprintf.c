@@ -7,15 +7,15 @@
 
 typedef enum arg_type {
   // Prefixes
-  BARE = 0, // int
-  HHPRE,    // char
-  HPRE,     // short
-  LPRE,     // long
-  LLPRE,    // long long
-  ZPRE,     // size
-  JPRE,     // intmax
-  TPRE,     // ptrdiff
-  BIGLPRE,  // long double
+  BARE,    // int
+  HHPRE,   // char
+  HPRE,    // short
+  LPRE,    // long
+  LLPRE,   // long long
+  ZPRE,    // size
+  JPRE,    // intmax
+  TPRE,    // ptrdiff
+  BIGLPRE, // long double
   // Types
   CHAR,
   UCHAR,
@@ -204,8 +204,6 @@ int vprintf(const char *restrict fmt, va_list ap) {
       continue;
     }
 
-    ch = *fmt;
-
     // run the state machine
     type = BARE;
     do {
@@ -220,6 +218,7 @@ int vprintf(const char *restrict fmt, va_list ap) {
 
     get_arg(&arg, type, &ap);
 
+    ch = *(fmt - 1);
     te = buf + sizeof(buf);
     len = 0;
     prefix = 0;
@@ -247,14 +246,17 @@ int vprintf(const char *restrict fmt, va_list ap) {
       break;
     }
 
-    if (prefix & PHEX && arg.i != 0) {
+    // We didn't print anything, need to zero pad
+    if (ts == te)
+      *--ts = '0';
+
+    if (prefix & PHEX) {
       *--ts = 'X' | (ch & LOWERCASE_BIT);
       *--ts = '0';
     }
 
-    if (prefix & PNEG) {
+    if (prefix & PNEG)
       *--ts = '-';
-    }
 
     len = (te - ts);
     vga_print(ts, len);
