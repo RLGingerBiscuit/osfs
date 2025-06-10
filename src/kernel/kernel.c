@@ -1,7 +1,7 @@
 #include <stddef.h>
 #include <stdint.h>
-#include <stdio.h>
 
+#include <kernel/kstdio.h>
 #include <kernel/multiboot.h>
 #include <kernel/panic.h>
 #include <kernel/vga.h>
@@ -25,11 +25,11 @@ void kernel_main(multiboot_info_t *mbd, uint32_t magic) {
        i += sizeof(multiboot_memory_map_t)) {
     multiboot_memory_map_t *mm = (multiboot_memory_map_t *)(mbd->mmap_addr + i);
 
-    printf("Start Addr: 0x%llx | Length: %llx | Size: %x | Type: %x\n",
-           mm->addr, mm->len, mm->size, mm->type);
+    vga_printf("Start Addr: 0x%llx | Length: %llx | Size: %x | Type: %x\n",
+               mm->addr, mm->len, mm->size, mm->type);
 
     if (mm->type == MULTIBOOT_MEMORY_AVAILABLE) {
-      printf("\tAVAILABLE\n");
+      vga_printf("\tAVAILABLE\n");
     }
   }
 }

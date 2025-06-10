@@ -1,7 +1,7 @@
 
 #include <limits.h>
-#include <stdio.h>
 
+#include <kernel/kstdio.h>
 #include <kernel/panic.h>
 #include <kernel/vga.h>
 
@@ -167,7 +167,7 @@ static char *fmt_dec(uintmax_t x, char *te);
 static char *fmt_hex(uintmax_t x, char *te, char lower);
 static char *fmt_oct(uintmax_t x, char *te);
 
-int vprintf(const char *restrict fmt, va_list ap) {
+int vga_vprintf(const char *restrict fmt, va_list ap) {
   char buf[sizeof(uintmax_t) * 3];
   char *ts, *te;
   char ch;
