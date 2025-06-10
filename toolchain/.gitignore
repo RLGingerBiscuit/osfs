@@ -1,0 +1,8 @@
+Tarballs
+tarballs/
+# Sources
+sources/
+# Builds
+build/
+# Built stuff
+opt/

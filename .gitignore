@@ -2,10 +2,6 @@
 build/
 .cache/
 
-# Toolchain (cross compiler)
-toolchain/*
-!toolchain/*.sh
-
 # Clangd config
 .clangd
 compile_commands.json
@@ -14,4 +10,5 @@ compile_commands.json
 .gdbinit
 
 # Silly little misc. files
+notes/
 *.ref
