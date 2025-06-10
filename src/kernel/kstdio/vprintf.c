@@ -1,5 +1,6 @@
 
 #include <limits.h>
+#include <string.h>
 
 #include <kernel/kstdio.h>
 #include <kernel/panic.h>
@@ -244,6 +245,12 @@ int vga_vprintf(const char *restrict fmt, va_list ap) {
     case 'o':
       ts = fmt_oct(arg.i, te);
       break;
+
+    case 's':
+      ts = arg.p ? (char *)arg.p : "(null)";
+      len = strlen(ts);
+      te = ts + len;
+      break;
     }
 
     // We didn't print anything, need to zero pad
@@ -258,7 +265,9 @@ int vga_vprintf(const char *restrict fmt, va_list ap) {
     if (prefix & PNEG)
       *--ts = '-';
 
-    len = (te - ts);
+    if (len < te - ts)
+      len = (te - ts);
+
     vga_print(ts, len);
   }
 

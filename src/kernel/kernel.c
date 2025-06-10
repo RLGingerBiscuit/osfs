@@ -18,7 +18,12 @@ void kernel_main(multiboot_info_t *mbd, uint32_t magic) {
   if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
     panic("Invalid multiboot magic!");
 
-  if ((mbd->flags >> 6 & 0x1) == 0)
+  if (mbd->flags & MULTIBOOT_INFO_BOOT_LOADER_NAME && mbd->boot_loader_name)
+    vga_printf("Bootloader: %s\n\n", (char *)mbd->boot_loader_name);
+  else
+    vga_printstr("Unknown bootloader!\n\n");
+
+  if ((mbd->flags & MULTIBOOT_INFO_MEM_MAP) == 0)
     panic("Invalid multiboot memory map!");
 
   for (uintptr_t i = 0; i < mbd->mmap_length;
