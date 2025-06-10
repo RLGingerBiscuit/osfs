@@ -30,6 +30,11 @@ _start:
         # Set up the stack
         mov $stack_top, %esp
 
+        # Multiboot magic
+        push %eax
+        # Multiboot info
+        push %ebx
+
         # Run the kernel
         call kernel_main
 

@@ -2,6 +2,7 @@
 #include <stdint.h>
 #include <stdio.h>
 
+#include <kernel/multiboot.h>
 #include <kernel/panic.h>
 #include <kernel/vga.h>
 
@@ -11,24 +12,24 @@
 #error "This code must be compiled with an x86-elf compiler"
 #endif
 
-void kernel_main(void) {
+void kernel_main(multiboot_info_t *mbd, uint32_t magic) {
   vga_init();
 
-  printf("Hello: %% %u %d %i %o %x %X %p\n", 42, -42, 42, 42, 42, 42, 42);
+  if (magic != MULTIBOOT_BOOTLOADER_MAGIC)
+    panic("Invalid multiboot magic!");
 
-  // vga_print("Hello World!\nWe're kerneling this thang!\n");
-  // for (int i = 0; i < 256; ++i) {
-  //   vga_setcol(i);
-  //   vga_putc('M');
-  // }
+  if ((mbd->flags >> 6 & 0x1) == 0)
+    panic("Invalid multiboot memory map!");
 
-  for (int i = 33; i < 33 + 40; ++i) {
-    for (int j = 0; j < 80; ++j) {
-      vga_putc(i);
-    }
-    size_t x = 0;
-    while (x < 25000000) {
-      x++;
+  for (uintptr_t i = 0; i < mbd->mmap_length;
+       i += sizeof(multiboot_memory_map_t)) {
+    multiboot_memory_map_t *mm = (multiboot_memory_map_t *)(mbd->mmap_addr + i);
+
+    printf("Start Addr: 0x%llx | Length: %llx | Size: %x | Type: %x\n",
+           mm->addr, mm->len, mm->size, mm->type);
+
+    if (mm->type == MULTIBOOT_MEMORY_AVAILABLE) {
+      printf("\tAVAILABLE\n");
     }
   }
 }
