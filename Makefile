@@ -1,11 +1,15 @@
 SRC_DIR=src
 BUILD_DIR=build
+ISO_DIR=$(BUILD_DIR)/isodir
 
 # Sorry, I'm using WSL
 QEMU=qemu-system-i386.exe
 
-KERNEL_ELF=$(BUILD_DIR)/kernel.elf
 LINKER_FILE=linker.ld
+GRUB_CFG=grub.cfg
+
+KERNEL_ELF=$(BUILD_DIR)/kernel.elf
+KERNEL_ISO=$(BUILD_DIR)/kernel.iso
 
 CC=i686-elf-gcc
 COMMON_FLAGS=-ffreestanding -g
@@ -23,11 +27,19 @@ SRCS=$(call rwildcard,$(SRC_DIR),*.c *.s)
 OBJS=$(call objsubst,*.s,$(call objsubst,*.c,$(SRCS)))
 
 .PHONY=all
-all: $(KERNEL_ELF)
+all: $(KERNEL_ISO)
 
 .PHONY=run
 run: all
-	$(QEMU) -kernel $(KERNEL_ELF)
+# Sorry, I'm using WSL
+# $(QEMU) -cdrom build/kernel.iso
+	$(QEMU) -cdrom '$(shell wslpath -a -w $(KERNEL_ISO))'
+
+$(KERNEL_ISO): $(KERNEL_ELF) $(GRUB_CFG)
+	mkdir -p $(ISO_DIR)/boot/grub
+	cp $(KERNEL_ELF) $(ISO_DIR)/boot
+	cp $(GRUB_CFG) $(ISO_DIR)/boot/grub
+	grub-mkrescue -o $(KERNEL_ISO) $(ISO_DIR)
 
 $(KERNEL_ELF): $(BUILD_DIR) $(LINKER_FILE) $(OBJS)
 	$(CC) $(LDFLAGS) -T $(LINKER_FILE) $(OBJS) -o $(KERNEL_ELF) -lgcc
