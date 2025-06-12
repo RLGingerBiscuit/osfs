@@ -57,6 +57,16 @@ boot_page_directory:
 # boot_page_table:
 # .skip 4096
 
+.extern multiboot_info_ptr
+.type multiboot_info_ptr, @object
+
+.macro mb_p2v offs:req
+        movl \offs , %eax
+        cmpl $0, %eax
+        je _mb_p2v_\+
+        orl $KERNEL_VIRT_BASE, \offs
+_mb_p2v_\+ :
+.endm
 
 # Bootloader/paging setup
 .section .boot, "a", @progbits
@@ -77,56 +87,48 @@ _start:
         orl $0x80010000, %eax
         movl %eax, %cr0
 
+        # Virtualify multiboot info addrs (if not 0)
+        orl $KERNEL_VIRT_BASE, %ebx
+        mb_p2v 0x10(%ebx) # cmdline
+        mb_p2v 0x18(%ebx) # mods_addr
+        mb_p2v 0x24(%ebx) # aout_sym.elf/elf_sec.addr
+        mb_p2v 0x30(%ebx) # mmap_addr
+        mb_p2v 0x38(%ebx) # drives_addr
+        mb_p2v 0x3c(%ebx) # config_table
+        mb_p2v 0x40(%ebx) # boot_loader_name
+        mb_p2v 0x44(%ebx) # apm_table
+        mb_p2v 0x48(%ebx) # vbe_control_info
+        mb_p2v 0x4c(%ebx) # vbe_mode_info
+        mb_p2v 0x58(%ebx) # framebuffer_addr
+
+        # If framebuffer type is indexed, we have an address to modify
+        movl 0x6d(%ebx), %eax
+        cmpl $0, %eax
+        je .framebuffer_not_indexed
+        mb_p2v 0x70(%ebx) # framebuffer_palette_addr
+
+.framebuffer_not_indexed:
+        # Store multiboot info so we don't accidentally clobber it
+        movl %ebx, multiboot_info_ptr
+
         # Jump up to our kernel bootstrap
         lea higher_half, %eax
         jmp *%eax
 
 .size _start, . - _start
 
-.macro mbd_p2v offs:req
-        movl \offs , %eax
-        cmpl $0, %eax
-        je _mbd_p2v_\+
-        orl $KERNEL_VIRT_BASE, \offs
-_mbd_p2v_\+ :
-.endm
-
 # Actual bootstrap code (with paging set up)
 .section .text
 higher_half:
         # First things first, remove the identity mapping
         # note that we can now just use the virtual address
-        movl $0, boot_page_directory + 0
+        movl $0, boot_page_directory
         # and flush the tlb
         movl %cr3, %eax
         movl %eax, %cr3
 
         # Set up the stack
         movl $stack_top, %esp
-
-        # Virtualify multiboot info addrs (if not 0)
-        orl $KERNEL_VIRT_BASE, %ebx
-        mbd_p2v 0x10(%ebx) # cmdline
-        mbd_p2v 0x18(%ebx) # mods_addr
-        mbd_p2v 0x24(%ebx) # aout_sym.elf/elf_sec.addr
-        mbd_p2v 0x30(%ebx) # mmap_addr
-        mbd_p2v 0x38(%ebx) # drives_addr
-        mbd_p2v 0x3c(%ebx) # config_table
-        mbd_p2v 0x40(%ebx) # boot_loader_name
-        mbd_p2v 0x44(%ebx) # apm_table
-        mbd_p2v 0x48(%ebx) # vbe_control_info
-        mbd_p2v 0x4c(%ebx) # vbe_mode_info
-        mbd_p2v 0x58(%ebx) # framebuffer_addr
-
-        # If framebuffer type is indexed, we have an address to modify
-        movl 0x6d(%ebx), %eax
-        cmpl $0, %eax
-        je framebuffer_not_indexed
-        mbd_p2v 0x70(%ebx) # framebuffer_palette_addr
-
-framebuffer_not_indexed:
-        # Push multiboot info
-        push %ebx
 
         # Run the kernel
         call kernel_main

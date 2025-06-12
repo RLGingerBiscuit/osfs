@@ -33,7 +33,7 @@ all: $(KERNEL_ISO)
 run: all
 # Sorry, I'm using WSL
 # $(QEMU) -cdrom build/kernel.iso
-	$(QEMU) -cdrom '$(shell wslpath -a -w $(KERNEL_ISO))'
+	$(QEMU) -cdrom '$(shell wslpath -a -w $(KERNEL_ISO))' -monitor stdio
 
 $(KERNEL_ISO): $(KERNEL_ELF) $(GRUB_CFG)
 	mkdir -p $(ISO_DIR)/boot/grub
