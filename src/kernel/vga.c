@@ -29,9 +29,13 @@ void vga_init(void) {
 
 inline void vga_setcol(enum vga_colour col) { term_colour = col; }
 
-inline void vga_setfg(enum vga_colour fg) { term_colour = fg & 0xf; }
+inline void vga_setfg(enum vga_colour fg) {
+  term_colour = (term_colour & 0xf0) | (fg & 0xf);
+}
 
-inline void vga_setbg(enum vga_colour bg) { term_colour = (bg & 0xf) << 4; }
+inline void vga_setbg(enum vga_colour bg) {
+  term_colour = (bg & 0xf) << 4 | (term_colour & 0xf);
+}
 
 static inline void vga_advance_line() {
   term_col = 0;
