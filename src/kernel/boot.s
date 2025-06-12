@@ -3,6 +3,13 @@
 
 # Kernel constants
 .set KERNEL_VIRT_BASE, 0xC0000000
+.set KERNEL_MAX_SIZE, 0x100000 # 1MiB
+
+.set VGA_ADDRESS, 0xB8000
+
+.set PAGE_SIZE, 0x1000 # 4KiB
+.set PAGE_PRESENT, 1 << 0
+.set PAGE_RW, 1 << 1
 
 # Multiboot constants
 .set MB_ALIGN, 1 << 0
@@ -45,17 +52,10 @@ stack_top:
 .align 4096
 .global boot_page_directory
 boot_page_directory:
-.long 0b10000011 # Identity map first 4MiB as RW
-.fill 768-1, 4, 0
-.long 0<<22 | 0b10000011 # Map 0xC0000000 -> 0x0
-.long 1<<22 | 0b10000011
-.long 2<<22 | 0b10000011
-.long 3<<22 | 0b10000011
-.fill 256-4, 4, 0
-# NOTE: Not needed as we're using 4MiB pages (please I just wanna get something working)
-# .global boot_page_table
-# boot_page_table:
-# .skip 4096
+.skip 4096
+.global boot_page_table
+boot_page_table:
+.skip 4096
 
 .extern multiboot_info_ptr
 .type multiboot_info_ptr, @object
@@ -73,14 +73,46 @@ _mb_p2v_\+ :
 .global _start
 .type _start, @function
 _start:
+        # NOTE: we CANNOT use ebx since that contains our multiboot info
+
+        # Loop variable (<<2 for pde index, <<12 for address)
+        movl $0, %esi
+        # Static amount (1MiB for now) to keep it simple
+        movl $(KERNEL_MAX_SIZE >> 10), %ecx
+
+        # esi = loop var
+        # edi = pde addr
+        # edx = phys addr
+.map_loop:
+        # pde = pt + 4*i
+        movl %esi, %edi
+        sall $2, %edi
+        addl $(boot_page_table - KERNEL_VIRT_BASE), %edi
+
+        # phys = 4096*i | 0x3
+        movl %esi, %edx
+        sall $12, %edx
+        orl $(PAGE_PRESENT | PAGE_RW), %edx
+
+        # *pde = phys
+        movl %edx, (%edi)
+
+        # while(++i < KERNEL_MAX_SIZE >> 10)
+        addl $1, %esi
+        cmpl %esi, %ecx
+        jg .map_loop
+
+        # Explicitly map VGA at end of table
+        movl $(VGA_ADDRESS | PAGE_PRESENT | PAGE_RW), boot_page_table - KERNEL_VIRT_BASE + (PAGE_SIZE >> 2 - 1)*4
+
+        # Identity map
+        movl $(boot_page_table - KERNEL_VIRT_BASE + PAGE_PRESENT + PAGE_RW), boot_page_directory - KERNEL_VIRT_BASE + 0
+        # Higher half map
+        movl $(boot_page_table - KERNEL_VIRT_BASE + PAGE_PRESENT + PAGE_RW), boot_page_directory - KERNEL_VIRT_BASE + (KERNEL_VIRT_BASE >> 0x14)
+
         # Tell CPU about our page directory (in physical space)
         movl $(boot_page_directory - KERNEL_VIRT_BASE), %ecx
         movl %ecx, %cr3
-
-        # Enable 4MiB pages (PSE)
-        movl %cr4, %eax
-        orl $0x10, %eax
-        movl %eax, %cr4
 
         # Enable paging and write-protect
         movl %cr0, %eax
