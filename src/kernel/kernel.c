@@ -7,7 +7,7 @@
 #include <kernel/tty.h>
 
 void kernel_main(multiboot_info_t *mbd) {
-  volatile char *vga = (volatile char *)0xB8000;
+  volatile char *vga = (volatile char *)0xC00B8000;
   vga[0] = 'X';
   vga[1] = 0x07;
   vga[2] = 'Y';

@@ -2,8 +2,7 @@
 .extern kernel_main
 
 # Kernel constants
-# .set KERNEL_VIRT_BASE, 0xC0000000
-.set KERNEL_VIRT_BASE, 0x0
+.set KERNEL_VIRT_BASE, 0xC0000000
 
 # Multiboot constants
 .set MB_ALIGN, 1 << 0
