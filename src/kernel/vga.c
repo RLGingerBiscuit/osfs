@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "defs.h"
 #include "vga.h"
 #include <kernel/tty.h>
 
@@ -12,7 +13,9 @@ const int VGA_ROWS = 25;
 static int term_col = 0;
 static int term_row = 0;
 static uint8_t term_colour = 0x0f;
-volatile uint16_t *vga_buffer = (volatile uint16_t *)0xC03FF000; // Virtual address
+volatile uint16_t *vga_buffer =
+    (volatile uint16_t *)(KERNEL_VIRT_BASE |
+                          PAGE_SIZE * (PAGE_SIZE / 4 - 1)); // Virtual address
 
 void vga_init(void) {
   for (int col = 0; col < VGA_COLS; ++col) {

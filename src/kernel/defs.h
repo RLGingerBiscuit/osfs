@@ -1,0 +1,12 @@
+#ifndef _KERNEL_DEFS_H
+#define _KERNEL_DEFS_H
+
+#define KERNEL_VIRT_BASE 0xC0000000
+
+// 1MiB
+#define KERNEL_MAX_SIZE 0x100000
+
+// 4KiB
+#define PAGE_SIZE 0x1000
+
+#endif // _KERNEL_DEFS_H

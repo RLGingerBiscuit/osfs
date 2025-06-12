@@ -103,7 +103,7 @@ _start:
         jg .map_loop
 
         # Explicitly map VGA at end of table
-        movl $(VGA_ADDRESS | PAGE_PRESENT | PAGE_RW), boot_page_table - KERNEL_VIRT_BASE + (PAGE_SIZE >> 2 - 1)*4
+        movl $(VGA_ADDRESS | PAGE_PRESENT | PAGE_RW), boot_page_table - KERNEL_VIRT_BASE + (PAGE_SIZE >> 2 - 1) * 4
 
         # Identity map
         movl $(boot_page_table - KERNEL_VIRT_BASE + PAGE_PRESENT + PAGE_RW), boot_page_directory - KERNEL_VIRT_BASE + 0
