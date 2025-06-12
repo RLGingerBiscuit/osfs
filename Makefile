@@ -22,7 +22,7 @@ rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(su
 objsubst=$(patsubst $(SRC_DIR)/$(subst *,%,$1),$(BUILD_DIR)/$(SRC_DIR)/%$(subst *,,$1).o,$2)
 
 # Calling all c and asm files, we want you
-SRCS=$(call rwildcard,$(SRC_DIR),*.c *.s)
+SRCS=$(call rwildcard,$(SRC_DIR),*.c *.S)
 # But not really, we want your object files
 OBJS=$(call objsubst,*.s,$(call objsubst,*.c,$(SRCS)))
 
@@ -50,7 +50,7 @@ $(BUILD_DIR)/$(SRC_DIR)/%.c.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # For now we're just 32-bit so we simply just include asm too
-$(BUILD_DIR)/$(SRC_DIR)/%.s.o: $(SRC_DIR)/%.s
+$(BUILD_DIR)/$(SRC_DIR)/%.S.o: $(SRC_DIR)/%.S
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 

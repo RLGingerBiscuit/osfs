@@ -1,14 +1,14 @@
 .global gdt_flush
 .type gdt_flush, @function
 gdt_flush:
-        # Disable interrupts
+        // Disable interrupts
         cli
-        
-        # Set gdt ptr
+
+        // Set gdt ptr
         movl 4(%esp), %eax 
         lgdt (%eax)
 
-        # Reload segment registers
+        // Reload segment registers
         mov $0x10, %ax
         mov %ax, %ds
         mov %ax, %es
@@ -18,7 +18,7 @@ gdt_flush:
         jmp $0x08, $.flush
 
 .flush:
-        # Enable interrupts
+        // Enable interrupts
         sti
         ret
 
