@@ -13,13 +13,13 @@ KERNEL_ISO=$(BUILD_DIR)/kernel.iso
 
 CC=i686-elf-gcc
 COMMON_FLAGS=-ffreestanding -g
-CFLAGS=$(COMMON_FLAGS) -std=c99 -Wall -Werror -I$(SRC_DIR)/kernel/include -I$(SRC_DIR)/libc/include -DOSFS_LIBK
+CFLAGS=$(COMMON_FLAGS) -std=c99 -fno-stack-protector -fno-builtin -Wall -Werror -I$(SRC_DIR)/kernel/include -I$(SRC_DIR)/libc/include -DOSFS_LIBK
 LDFLAGS=$(COMMON_FLAGS) -nostdlib
 
 # This mess takes a path & file exts and recursively matches them (e.g. src/a.c src/utils/b.c)
 rwildcard=$(foreach d,$(wildcard $(1:=/*)),$(call rwildcard,$d,$2) $(filter $(subst *,%,$2),$d))
 # This one substitues a file ext for .o... that's literally it
-objsubst=$(patsubst $(SRC_DIR)/$(subst *,%,$1),$(BUILD_DIR)/$(SRC_DIR)/%.o,$2)
+objsubst=$(patsubst $(SRC_DIR)/$(subst *,%,$1),$(BUILD_DIR)/$(SRC_DIR)/%$(subst *,,$1).o,$2)
 
 # Calling all c and asm files, we want you
 SRCS=$(call rwildcard,$(SRC_DIR),*.c *.s)
@@ -45,12 +45,12 @@ $(KERNEL_ELF): $(BUILD_DIR) $(LINKER_FILE) $(OBJS)
 	$(CC) $(LDFLAGS) -T $(LINKER_FILE) $(OBJS) -o $(KERNEL_ELF) -lgcc
 
 # Just build em all (into objects at least)
-$(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.c
+$(BUILD_DIR)/$(SRC_DIR)/%.c.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 # For now we're just 32-bit so we simply just include asm too
-$(BUILD_DIR)/$(SRC_DIR)/%.o: $(SRC_DIR)/%.s
+$(BUILD_DIR)/$(SRC_DIR)/%.s.o: $(SRC_DIR)/%.s
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
