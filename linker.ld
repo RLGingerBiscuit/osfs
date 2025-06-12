@@ -6,12 +6,15 @@ SECTIONS
   /* Put sections starting at 2M */
   . = 2M;
 
+  /* The multiboot header */
+  .multiboot ALIGN(4K) :
+  {
+    *(.multiboot)
+  }
+
   /* The code itself */
   .text BLOCK(4K) : ALIGN(4K)
   {
-    /* The multiboot header */
-    *(.multiboot)
-    /* The code itself */
     *(.text)
   }
 

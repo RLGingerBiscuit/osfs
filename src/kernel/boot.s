@@ -9,14 +9,14 @@
 .set MB_CHECKSUM, -(MB_MAGIC + MB_FLAGS)
 
 # Multiboot so we can actually run this thang
-.section .multiboot
+.section .multiboot, "a", @progbits
 .align 4
 .long MB_MAGIC
 .long MB_FLAGS
 .long MB_CHECKSUM
 
 # Literally just the stack
-.section .bss
+.section .bss, "aw", @nobits
 .align 16
 stack_bottom:
 .skip 16384 # 16KB stack'll do for now
