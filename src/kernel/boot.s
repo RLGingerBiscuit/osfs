@@ -72,24 +72,60 @@ _start:
         orl $0x10, %eax
         movl %eax, %cr4
 
-        # Enable paging
+        # Enable paging and write-protect
         movl %cr0, %eax
-        orl $0x80000000, %eax
+        orl $0x80010000, %eax
         movl %eax, %cr0
 
         # Jump up to our kernel bootstrap
-        jmp higher_half
+        lea higher_half, %eax
+        jmp *%eax
 
 .size _start, . - _start
 
+.macro mbd_p2v offs:req
+        movl \offs , %eax
+        cmpl $0, %eax
+        je _mbd_p2v_\+
+        orl $KERNEL_VIRT_BASE, \offs
+_mbd_p2v_\+ :
+.endm
 
 # Actual bootstrap code (with paging set up)
 .section .text
 higher_half:
-        # Set up the stack
-        mov $stack_top, %esp
+        # First things first, remove the identity mapping
+        # note that we can now just use the virtual address
+        movl $0, boot_page_directory + 0
+        # and flush the tlb
+        movl %cr3, %eax
+        movl %eax, %cr3
 
-        # Multiboot info
+        # Set up the stack
+        movl $stack_top, %esp
+
+        # Virtualify multiboot info addrs (if not 0)
+        orl $KERNEL_VIRT_BASE, %ebx
+        mbd_p2v 0x10(%ebx) # cmdline
+        mbd_p2v 0x18(%ebx) # mods_addr
+        mbd_p2v 0x24(%ebx) # aout_sym.elf/elf_sec.addr
+        mbd_p2v 0x30(%ebx) # mmap_addr
+        mbd_p2v 0x38(%ebx) # drives_addr
+        mbd_p2v 0x3c(%ebx) # config_table
+        mbd_p2v 0x40(%ebx) # boot_loader_name
+        mbd_p2v 0x44(%ebx) # apm_table
+        mbd_p2v 0x48(%ebx) # vbe_control_info
+        mbd_p2v 0x4c(%ebx) # vbe_mode_info
+        mbd_p2v 0x58(%ebx) # framebuffer_addr
+
+        # If framebuffer type is indexed, we have an address to modify
+        movl 0x6d(%ebx), %eax
+        cmpl $0, %eax
+        je framebuffer_not_indexed
+        mbd_p2v 0x70(%ebx) # framebuffer_palette_addr
+
+framebuffer_not_indexed:
+        # Push multiboot info
         push %ebx
 
         # Run the kernel
