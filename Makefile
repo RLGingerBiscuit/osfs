@@ -24,7 +24,7 @@ objsubst=$(patsubst $(SRC_DIR)/$(subst *,%,$1),$(BUILD_DIR)/$(SRC_DIR)/%$(subst 
 # Calling all c and asm files, we want you
 SRCS=$(call rwildcard,$(SRC_DIR),*.c *.S)
 # But not really, we want your object files
-OBJS=$(call objsubst,*.s,$(call objsubst,*.c,$(SRCS)))
+OBJS=$(call objsubst,*.S,$(call objsubst,*.c,$(SRCS)))
 
 .PHONY=all
 all: $(KERNEL_ISO)
