@@ -15,6 +15,11 @@ void kernel_main(multiboot_info_t *mbd) {
 
   printf("Hello %s World\n", "Kernel");
   printf("The number is %d\n", 42);
-  printf("Bootloader: %s\n", (char *)multiboot_info_ptr->boot_loader_name);
   printf("Multiboot: %p\n", multiboot_info_ptr);
+  printf("Bootloader: %s\n", (char *)multiboot_info_ptr->boot_loader_name);
+  printf("Kernel Start:\t\t%p\tKernel End:\t\t%p\n", _kernel_start, _kernel_end);
+  printf("Kernel RO Start:\t%p\tKernel RO End:\t%p\n", _kernel_readonly_start,
+         _kernel_readonly_end);
+  printf("Kernel RW Start:\t%p\tKernel RW End:\t%p\n", _kernel_readwrite_start,
+         _kernel_readwrite_end);
 }
