@@ -9,6 +9,10 @@ compile_commands.json
 # GDB config
 .gdbinit
 
+# Debugging stuff
+*.log
+*.dump
+
 # Silly little misc. files
 notes/
 *.ref

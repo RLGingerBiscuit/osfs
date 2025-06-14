@@ -24,12 +24,11 @@ SECTIONS
   /* Jump up to our higher half */
   . += KERNEL_VIRT_BASE;
 
-  /* A marker so we know what should be RO */
-  _kernel_readonly_start = . - KERNEL_VIRT_BASE;
-
   /* The code itself */
   .text ALIGN(PAGE_SIZE) : AT(ADDR(.text) - KERNEL_VIRT_BASE)
   {
+    /* A marker so we know what should be RO */
+    _kernel_readonly_start = . - KERNEL_VIRT_BASE;
     *(.text)
   }
 
@@ -42,12 +41,11 @@ SECTIONS
   /* A marker so we know what should be RO */
   _kernel_readonly_end = . - KERNEL_VIRT_BASE;
 
-  /* A marker so we know what should be RW */
-  _kernel_readwrite_start = . - KERNEL_VIRT_BASE;
-
   /* RW data */
 	.data ALIGN(PAGE_SIZE) : AT(ADDR(.data) - KERNEL_VIRT_BASE)
 	{
+    /* A marker so we know what should be RW */
+    _kernel_readwrite_start = . - KERNEL_VIRT_BASE;
 		*(.data)
 	}
 
@@ -59,6 +57,7 @@ SECTIONS
 		*(.page_tables)
 	}
 
+	/* A marker so we know what should be RW */
 	_kernel_readwrite_end = . - KERNEL_VIRT_BASE;
 
 	/* Mark the (physical) end of the kernel */
