@@ -77,7 +77,7 @@ typedef struct tss_entry {
 } __attribute__((packed)) tss_entry_t;
 _Static_assert(sizeof(tss_entry_t) == 0x6c, "");
 
-void gdt_init();
+void gdt_init(void);
 
 // void set_gdt(uint32_t num, uint32_t base, uint32_t limit, uint8_t access,
 //              uint8_t flags);
