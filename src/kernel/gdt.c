@@ -5,9 +5,9 @@
 extern void gdt_flush(uint32_t);
 extern void tss_flush();
 
-#define GDT_ENTRY_COUNT 6
+#define GDT_DESCRIPTOR_COUNT 6
 
-gdt_entry_t gdt_entries[GDT_ENTRY_COUNT] = {0};
+gdt_descriptor_t gdt_entries[GDT_DESCRIPTOR_COUNT] = {0};
 tss_entry_t tss_entry = {0};
 gdt_ptr_t gdt_ptr = {0};
 

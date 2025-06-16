@@ -1,6 +1,8 @@
 #ifndef _CDEFS_H
 #define _CDEFS_H
 
+#define PACKED __attribute__((packed))
+
 // Taken straight from
 // https://patchwork.ozlabs.org/project/glibc/patch/54D40347.3020508@cs.ucla.edu/#962425
 #define _Static_assert(expr, mesg)                                              \

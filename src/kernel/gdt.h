@@ -29,7 +29,7 @@ enum gdt_flag {
   GDT_FLAG_4KiB = 1 << 3,
 };
 
-typedef struct gdt_entry {
+typedef struct PACKED gdt_descriptor {
   uint16_t limit_lo;
   uint16_t base_lo;
   uint8_t base_mid;
@@ -37,16 +37,16 @@ typedef struct gdt_entry {
   uint8_t limit_hi : 4;
   uint8_t flags : 4;
   uint8_t base_hi;
-} __attribute__((packed)) gdt_entry_t;
-_Static_assert(sizeof(gdt_entry_t) == 8, "");
+} gdt_descriptor_t;
+_Static_assert(sizeof(gdt_descriptor_t) == 8, "");
 
-typedef struct gdt_ptr {
+typedef struct PACKED gdt_ptr {
   uint16_t limit;
   uint32_t base;
-} __attribute__((packed)) gdt_ptr_t;
+} gdt_ptr_t;
 _Static_assert(sizeof(gdt_ptr_t) == 6, "");
 
-typedef struct tss_entry {
+typedef struct PACKED tss_entry {
   uint32_t prev_tss;
   uint32_t esp0;
   uint32_t ss0;
@@ -74,7 +74,7 @@ typedef struct tss_entry {
   uint32_t ldtr;
   uint32_t iopb;
   uint32_t ssp;
-} __attribute__((packed)) tss_entry_t;
+} tss_entry_t;
 _Static_assert(sizeof(tss_entry_t) == 0x6c, "");
 
 void gdt_init(void);
