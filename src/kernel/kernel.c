@@ -3,6 +3,7 @@
 #include <stdio.h>
 
 #include "gdt.h"
+#include "interrupts.h"
 #include <kernel/multiboot.h>
 #include <kernel/tty.h>
 
@@ -12,9 +13,9 @@ extern unsigned char _kernel_readonly_start[], _kernel_readonly_end[];
 extern unsigned char _kernel_readwrite_start[], _kernel_readwrite_end[];
 
 void kernel_main() {
-  gdt_init();
-
   tty_init();
+  gdt_init();
+  idt_init();
 
   printf("Hello %s World\n", "Kernel");
   printf("The number is %d\n", 42);
