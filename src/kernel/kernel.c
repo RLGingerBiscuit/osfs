@@ -27,4 +27,8 @@ void kernel_main() {
          _kernel_readonly_end);
   printf("Kernel RW Start:\t%p\tKernel RW End:\t%p\n", _kernel_readwrite_start,
          _kernel_readwrite_end);
+
+  // Page fault testing
+  // *((uint8_t *)0xdeadbeef) = 42;
+  // printf("The illegal: %x\n", *((uint8_t *)0xcafebabe));
 }
