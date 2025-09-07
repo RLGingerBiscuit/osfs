@@ -17,6 +17,7 @@ void write_tss(uint32_t num, uint16_t ss0, uint16_t esp0);
 
 void gdt_init() {
   memset(gdt_entries, 0, sizeof(gdt_entries));
+
   gdt_ptr.limit = sizeof(gdt_entries) - 1;
   gdt_ptr.base = (uint32_t)&gdt_entries;
 

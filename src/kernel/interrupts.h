@@ -26,7 +26,7 @@ typedef struct PACKED segment_selector {
   uint8_t tl : 1;
   uint16_t index : 13; // NOTE: needs to be >> 3
 } segment_selector_t;
-_Static_assert(sizeof(segment_selector_t) == sizeof(uint16_t), "");
+_Static_assert(sizeof(segment_selector_t) == 2, "");
 
 typedef struct PACKED idt_descriptor {
   uint16_t offset_lo;
