@@ -73,6 +73,11 @@ $(BUILD_DIR)/$(KERNEL_DIR)/%.c.o: $(KERNEL_DIR)/%.c
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c -o $@ $<
 
+# Compile interrupts in their super special way
+$(BUILD_DIR)/$(KERNEL_DIR)/interrupt_handlers.c.o: $(KERNEL_DIR)/interrupt_handlers.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -mgeneral-regs-only -c -o $@ $<
+
 # For now we're just x86 so we just include asm too
 $(BUILD_DIR)/$(KERNEL_DIR)/%.S.o: $(KERNEL_DIR)/%.S
 	@mkdir -p $(@D)

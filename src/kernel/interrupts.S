@@ -21,13 +21,3 @@ idt_flush:
         // Enable interrupts
         sti
         ret
-
-.global isr_wrapper
-.type isr_wrapper, @function
-.align 4 // This took DAYS of figuring out smh
-isr_wrapper:
-        pusha
-        cld // C code needs DF to be clear
-        call interrupt_handler
-        popa
-        iret
