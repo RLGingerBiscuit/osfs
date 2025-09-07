@@ -1,14 +1,14 @@
 /* Start @ _start label */
 ENTRY(_start)
 
-KERNEL_PHYS_BASE = 1M;
+KERNEL_PHYS_BASE = 2M;
 KERNEL_VIRT_BASE = 0xC0000000;
 KERNEL_MAX_SIZE = 1M;
 PAGE_SIZE = 4K;
 
 SECTIONS
 {
-  /* Put sections starting at 1M */
+  /* Put sections starting at 2M */
   . = KERNEL_PHYS_BASE;
 
   /* Mark the (physical) start of the kernel */
