@@ -27,8 +27,6 @@ void idt_init(void) {
 
   // Flush IDT
   idt_flush((uint32_t)&idt_ptr);
-
-  __asm__("int $0x80");
 }
 
 void set_idt(uint32_t num, uint32_t offset, segment_selector_t selector,
@@ -40,4 +38,12 @@ void set_idt(uint32_t num, uint32_t offset, segment_selector_t selector,
   idt_entries[num].gate_type = gate_type;
   idt_entries[num].dpl = dpl;
   idt_entries[num].present = present;
+}
+
+void idt_set_interrupt_handler(uint8_t num,
+                               INTERRUPT (*handler)(interrupt_frame_t *frame)) {
+  set_idt(num, (uint32_t)handler, (segment_selector_t){.index = 0x08 >> 3},
+          IDT_GATE_TYPE_INTERRUPT32, IDT_DPL_RING0, 1);
+
+  idt_flush((uint32_t)&idt_ptr);
 }

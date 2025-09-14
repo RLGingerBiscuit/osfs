@@ -31,4 +31,7 @@ void vga_init(void);
 void vga_putc(char c);
 void vga_print(const char *str, size_t len);
 
+void vga_setpos(int x, int y);
+void vga_modpos(int x, int y);
+
 #endif // KERNEL_VGA_H

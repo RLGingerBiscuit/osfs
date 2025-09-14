@@ -1,6 +1,9 @@
 #include <stdio.h>
 
 #include "interrupt_handlers.h"
+#include "io.h"
+#include "keyboard.h"
+#include "pic.h"
 
 #define PRINT_STACK_FRAME()                                                    \
   printf("IP: 0x%lx, CS: 0x%hx, Flags: 0x%lx\n\n", (unsigned long)frame->ip,   \
@@ -33,9 +36,8 @@ INTERRUPT page_fault_interrupt_handler(interrupt_frame_t *frame,
   }
 }
 
-
 INTERRUPT double_fault_interrupt_handler(interrupt_frame_t *frame,
-                                       uint32_t error_code) {
+                                         uint32_t error_code) {
   (void)error_code;
 
   printf("\nEXCEPTION: DOUBLE FAULT\n");
@@ -47,3 +49,13 @@ INTERRUPT double_fault_interrupt_handler(interrupt_frame_t *frame,
 }
 
 STUB_HANDLER(test);
+
+INTERRUPT keyboard_interrupt_handler(interrupt_frame_t *frame) {
+  (void)frame;
+
+  uint8_t scancode = inb(KEYBOARD_DATA_PORT);
+
+  keyboard_push_scancode(scancode);
+
+  pic_eoi(IRQ_KEYBOARD);
+}

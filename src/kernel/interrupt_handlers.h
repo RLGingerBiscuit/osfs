@@ -7,21 +7,13 @@
 // For gate types/rings below
 #include "interrupts.h" // IWYU pragma: keep
 
-#define INTERRUPT __attribute((interrupt)) void
-
-typedef struct PACKED interrupt_frame {
-  uint32_t ip;
-  segment_selector_t cs;
-  uint16_t __reserved1;
-  uint32_t flags;
-} interrupt_frame_t;
-_Static_assert(sizeof(interrupt_frame_t) == 12, "");
-
 extern INTERRUPT breakpoint_interrupt_handler(interrupt_frame_t *frame);
 extern INTERRUPT page_fault_interrupt_handler(interrupt_frame_t *frame,
                                               uint32_t error_code);
 extern INTERRUPT double_fault_interrupt_handler(interrupt_frame_t *frame,
                                                 uint32_t error_code);
+
+extern INTERRUPT keyboard_interrupt_handler(interrupt_frame_t *frame);
 
 extern INTERRUPT test_interrupt_handler(interrupt_frame_t *frame);
 

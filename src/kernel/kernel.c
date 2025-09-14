@@ -2,10 +2,13 @@
 #include <stdint.h>
 #include <stdio.h>
 
-#include "gdt.h"
-#include "interrupts.h"
 #include <kernel/multiboot.h>
 #include <kernel/tty.h>
+
+#include "gdt.h"
+#include "interrupts.h"
+#include "keyboard.h"
+#include "pic.h"
 
 multiboot_info_t *multiboot_info_ptr;
 extern unsigned char _kernel_start[], _kernel_end[];
@@ -17,6 +20,9 @@ void kernel_main() {
   gdt_init();
   idt_init();
 
+  pic_init();
+  keyboard_init();
+
   printf("Hello %s World\n", "Kernel");
   printf("The number is %d\n", 42);
   printf("Multiboot: %p\n", multiboot_info_ptr);
@@ -27,8 +33,24 @@ void kernel_main() {
          _kernel_readonly_end);
   printf("Kernel RW Start:\t%p\tKernel RW End:\t%p\n", _kernel_readwrite_start,
          _kernel_readwrite_end);
+  printf("\n");
 
-  // Page fault testing
-  // *((uint8_t *)0xdeadbeef) = 42;
-  // printf("The illegal: %x\n", *((uint8_t *)0xcafebabe));
+  while (1) {
+    char ch;
+    if (keyboard_poll_ascii(&ch)) {
+      switch (ch) {
+      case 8: // Backspace
+        tty_modpos(-1, 0);
+        tty_putc(' ');
+        tty_modpos(-1, 0);
+        break;
+      default:
+        tty_putc(ch);
+        break;
+      }
+
+      // Sleep until next interrupt
+      __asm__("hlt");
+    }
+  }
 }

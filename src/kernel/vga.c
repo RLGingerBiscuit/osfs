@@ -75,3 +75,21 @@ void vga_print(const char *str, size_t len) {
   for (size_t i = 0; i < len; ++i)
     vga_putc(str[i]);
 }
+
+void vga_setpos(int x, int y) {
+  if (x < 0)
+    term_col = 0;
+  else if (x >= VGA_COLS)
+    term_col = VGA_COLS - 1;
+  else
+    term_col = x;
+
+  if (y < 0)
+    term_row = 0;
+  else if (y >= VGA_ROWS)
+    term_row = VGA_ROWS - 1;
+  else
+    term_row = y;
+}
+
+void vga_modpos(int x, int y) { vga_setpos(term_col + x, term_row + y); }

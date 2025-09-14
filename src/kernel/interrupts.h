@@ -5,6 +5,8 @@
 
 #include <stdint.h>
 
+#define INTERRUPT __attribute((interrupt)) void
+
 enum idt_dpl {
   IDT_DPL_RING0 = 0x00,
   IDT_DPL_RING1 = 0x01,
@@ -46,6 +48,18 @@ typedef struct PACKED idt_ptr {
 } idt_ptr_t;
 _Static_assert(sizeof(idt_ptr_t) == 6, "");
 
+typedef struct PACKED interrupt_frame {
+  uint32_t ip;
+  segment_selector_t cs;
+  uint16_t __reserved1;
+  uint32_t flags;
+} interrupt_frame_t;
+_Static_assert(sizeof(interrupt_frame_t) == 12, "");
+
 void idt_init(void);
+
+// A simplified version of set_idt for outside use.
+void idt_set_interrupt_handler(uint8_t num,
+                               INTERRUPT (*handler)(interrupt_frame_t *frame));
 
 #endif // _KERNEL_IDT_H
