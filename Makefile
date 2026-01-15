@@ -6,9 +6,9 @@ KERNEL_DIR=$(SRC_DIR)/kernel
 LIBK_DIR=$(SRC_DIR)/libk
 LIBC_DIR=$(SRC_DIR)/libc
 
-# Sorry, I'm using WSL
-#QEMU=qemu-system-i386
-QEMU=qemu-system-i386.exe
+IS_WSL=$(shell command -v wslpath 2>/dev/null)
+
+QEMU=$(if $(IS_WSL),qemu-system-i386.exe,qemu-system-x86)
 
 LINKER_FILE=linker.ld
 GRUB_CFG=grub.cfg
@@ -42,9 +42,11 @@ all: $(KERNEL_ISO)
 
 .PHONY=run
 run: all
-# Sorry, I'm using WSL
-#$(QEMU) -cdrom 'build/kernel.iso' -monitor stdio
+ifeq ($(IS_WSL),)
+	$(QEMU) -cdrom '$(KERNEL_ISO)' -monitor stdio
+else
 	$(QEMU) -cdrom '$(shell wslpath -a -w $(KERNEL_ISO))' -monitor stdio
+endif
 
 # Make an ISO with the kernel binary
 $(KERNEL_ISO): $(KERNEL_ELF) $(GRUB_CFG)
