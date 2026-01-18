@@ -8,7 +8,7 @@ LIBC_DIR=$(SRC_DIR)/libc
 
 IS_WSL=$(shell command -v wslpath 2>/dev/null)
 
-QEMU=$(if $(IS_WSL),qemu-system-i386.exe,qemu-system-x86)
+QEMU=$(if $(IS_WSL),qemu-system-i386.exe,qemu-system-i386)
 
 LINKER_FILE=linker.ld
 GRUB_CFG=grub.cfg

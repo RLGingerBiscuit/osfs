@@ -4,9 +4,9 @@ set -e
 
 SCRIPT_ROOT=$(dirname -- "$(readlink -f -- "$0")")
 
-source env.sh
-
 pushd "$SCRIPT_ROOT"
+
+source env.sh
 
 # Define the versions and URLs for binutils and gcc
 BINUTILS_VERSION="2.44"
